@@ -2,6 +2,12 @@
 
 A decentralized hackathon judging system that uses Fully Homomorphic Encryption (FHE) to ensure complete privacy during the judging process. Judges submit encrypted scores, which are aggregated homomorphically on-chain without revealing individual scores.
 
+## 🌐 Live Demo
+
+**🚀 Frontend Deployed on Vercel**: [https://fhe-hackathon-judging-system.vercel.app/](https://fhe-hackathon-judging-system.vercel.app/)
+
+**📱 Smart Contract Deployed on Sepolia**: `0x2aE943E41947954CD782698F906d95B7104562A1`
+
 ## 🚀 Features
 
 - **Privacy-Preserving**: All scores are encrypted using FHE, ensuring complete privacy
@@ -279,5 +285,20 @@ For support and questions:
 - Efficient state management
 
 ---
+
+## 🚀 Deployment Status
+
+| Component | Status | URL |
+|-----------|--------|-----|
+| **Frontend** | ✅ Deployed | [https://fhe-hackathon-judging-system.vercel.app/](https://fhe-hackathon-judging-system.vercel.app/) |
+| **Smart Contract** | ✅ Deployed (Sepolia) | `0x2aE943E41947954CD782698F906d95B7104562A1` |
+| **GitHub Repository** | ✅ Available | [https://github.com/Katewxp/fhe-hackathon-judging-system](https://github.com/Katewxp/fhe-hackathon-judging-system) |
+
+## 🔗 Quick Links
+
+- **🌐 Live Demo**: [https://fhe-hackathon-judging-system.vercel.app/](https://fhe-hackathon-judging-system.vercel.app/)
+- **📚 Source Code**: [https://github.com/Katewxp/fhe-hackathon-judging-system](https://github.com/Katewxp/fhe-hackathon-judging-system)
+- **📖 Documentation**: [COMPLETE_WORKFLOW.md](COMPLETE_WORKFLOW.md)
+- **🚀 Deployment Guide**: [DEPLOYMENT_INFO.md](DEPLOYMENT_INFO.md)
 
 Built with ❤️ using FHEVM and Next.js | Secure • Private • Transparent
