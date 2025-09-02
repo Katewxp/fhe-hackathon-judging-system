@@ -3,6 +3,37 @@
 import Link from "next/link";
 
 export default function AboutPage() {
+  const externalLinks = [
+    {
+      name: "GitHub Repository",
+      href: "https://github.com/Katewxp/fhe-hackathon-judging-system",
+      description: "View source code and contribute",
+      icon: "📚",
+      color: "from-gray-500 to-gray-600"
+    },
+    {
+      name: "ZAMA Official",
+      href: "https://zama.ai",
+      description: "Learn more about FHE technology",
+      icon: "🔐",
+      color: "from-blue-500 to-purple-600"
+    },
+    {
+      name: "Discord Community",
+      href: "https://discord.gg/zama",
+      description: "Join the ZAMA developer community",
+      icon: "💬",
+      color: "from-green-500 to-emerald-600"
+    },
+    {
+      name: "Live Demo",
+      href: "https://fhe-hackathon-judging-system.vercel.app",
+      description: "Try the platform live",
+      icon: "🚀",
+      color: "from-orange-500 to-red-600"
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Hero Section */}
@@ -115,8 +146,50 @@ export default function AboutPage() {
         </div>
       </div>
 
-      {/* Team Section */}
+      {/* External Links Section */}
       <div className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-white mb-6">
+              Get <span className="bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">Connected</span>
+            </h2>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              Explore our resources, join the community, and stay updated with the latest developments.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {externalLinks.map((link) => (
+              <a
+                key={link.name}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group"
+              >
+                <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-6 hover:bg-white/20 transition-all duration-300 transform hover:scale-105 cursor-pointer">
+                  <div className="text-4xl mb-4">{link.icon}</div>
+                  <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-blue-400 transition-colors">
+                    {link.name}
+                  </h3>
+                  <p className="text-gray-300 text-sm">
+                    {link.description}
+                  </p>
+                  <div className="mt-4 flex items-center text-blue-400 text-sm font-medium group-hover:text-blue-300 transition-colors">
+                    Visit Link
+                    <svg className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Team Section */}
+      <div className="py-20 px-4 sm:px-6 lg:px-8 bg-white/5">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-white mb-6">
@@ -164,7 +237,7 @@ export default function AboutPage() {
       </div>
 
       {/* Values Section */}
-      <div className="py-20 px-4 sm:px-6 lg:px-8 bg-white/5">
+      <div className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-white mb-6">
