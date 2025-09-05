@@ -382,13 +382,13 @@ class ContractService {
       }
 
       // Mock encrypted score and proof - replace with real FHE encryption
-      // For FHE contracts, we need to use the proper FHE types
-      const encryptedScore = ethers.toUtf8Bytes(`encrypted_${score}_${Date.now()}`);
+      // For FHE contracts, externalEuint8 is represented as bytes32 in the ABI
+      const encryptedScore = ethers.zeroPadValue(ethers.toUtf8Bytes(`encrypted_${score}_${Date.now()}`), 32);
       const proof = ethers.toUtf8Bytes(`proof_${score}_${Date.now()}`);
 
       console.log("Calling contract.submitScore with:", { hackathonId, projectId, encryptedScore: encryptedScore.length, proof: proof.length });
       
-      // Note: The contract expects externalEuint8 but we're passing bytes for now
+      // Note: The contract expects externalEuint8 (bytes32) and bytes proof
       // This is a mock implementation - in production, use proper FHE encryption
       const tx = await this.contract.submitScore(hackathonId, projectId, encryptedScore, proof);
       console.log("Transaction sent:", tx.hash);

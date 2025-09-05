@@ -4,7 +4,7 @@ export const CONTRACT_ABI = [
   "function createHackathon(string name, string description, uint256 startTime, uint256 endTime) external",
   "function registerProject(uint256 hackathonId, string name, string description, string githubUrl, string demoUrl) external",
   "function registerJudge(uint256 hackathonId, address judgeAddress) external",
-  "function submitScore(uint256 hackathonId, uint256 projectId, bytes calldata encryptedScore, bytes calldata proof) external",
+  "function submitScore(uint256 hackathonId, uint256 projectId, bytes32 encryptedScore, bytes calldata proof) external",
   "function aggregateScores(uint256 hackathonId, uint256 projectId) external",
   "function publishRankings(uint256 hackathonId, uint256[] calldata projectIds) external",
   "function getHackathonCount() external view returns (uint256)",
