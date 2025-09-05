@@ -76,13 +76,21 @@ class ContractService {
           const hackathonData = await this.contract.hackathons(i);
           console.log(`ContractService: Hackathon ${i} data:`, hackathonData);
           
+          // Convert Unix timestamps to milliseconds
+          const startTime = Number(hackathonData[2]) * 1000;
+          const endTime = Number(hackathonData[3]) * 1000;
+          const currentTime = Date.now();
+          
+          // Calculate if hackathon should be active based on current time
+          const shouldBeActive = currentTime >= startTime && currentTime <= endTime;
+          
           const hackathon: Hackathon = {
             id: i,
             name: hackathonData[0],
             description: hackathonData[1],
-            startDay: Math.floor(Number(hackathonData[2]) / (24 * 60 * 60)), // Convert Unix timestamp to days
-            endDay: Math.floor(Number(hackathonData[3]) / (24 * 60 * 60)), // Convert Unix timestamp to days
-            isActive: hackathonData[4],
+            startDay: Math.floor(startTime / (24 * 60 * 60 * 1000)), // Convert to days since epoch
+            endDay: Math.floor(endTime / (24 * 60 * 60 * 1000)), // Convert to days since epoch
+            isActive: shouldBeActive && hackathonData[4], // Check both time and contract state
             scoresAggregated: hackathonData[5],
             rankingsPublished: hackathonData[6],
             organizer: hackathonData[7],
@@ -112,13 +120,22 @@ class ContractService {
     try {
       // Direct access to hackathons mapping instead of getHackathon function
       const hackathonData = await this.contract.hackathons(id);
+      
+      // Convert Unix timestamps to milliseconds
+      const startTime = Number(hackathonData[2]) * 1000;
+      const endTime = Number(hackathonData[3]) * 1000;
+      const currentTime = Date.now();
+      
+      // Calculate if hackathon should be active based on current time
+      const shouldBeActive = currentTime >= startTime && currentTime <= endTime;
+      
       const hackathon: Hackathon = {
         id,
         name: hackathonData[0],
         description: hackathonData[1],
-        startDay: Math.floor(Number(hackathonData[2]) / (24 * 60 * 60)), // Convert Unix timestamp to days
-        endDay: Math.floor(Number(hackathonData[3]) / (24 * 60 * 60)), // Convert Unix timestamp to days
-        isActive: hackathonData[4],
+        startDay: Math.floor(startTime / (24 * 60 * 60 * 1000)), // Convert to days since epoch
+        endDay: Math.floor(endTime / (24 * 60 * 60 * 1000)), // Convert to days since epoch
+        isActive: shouldBeActive && hackathonData[4], // Check both time and contract state
         scoresAggregated: hackathonData[5],
         rankingsPublished: hackathonData[6],
         organizer: hackathonData[7],

@@ -46,10 +46,14 @@ export default function HackathonCard({
   };
 
   const getStatusText = () => {
+    const currentTime = Date.now();
+    const endTimeMs = endTime * 24 * 60 * 60 * 1000; // Convert days to milliseconds
+    
     if (rankingsPublished) return "Results Published";
     if (scoresAggregated) return "Scores Aggregated";
     if (isActive) return "Active";
-    return "Ended";
+    if (currentTime > endTimeMs) return "Ended";
+    return "Upcoming";
   };
 
   return (

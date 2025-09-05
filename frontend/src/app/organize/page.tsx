@@ -550,7 +550,8 @@ export default function OrganizePage() {
                             <span className="text-gray-400">Status:</span>
                             <span className="text-white ml-2">
                               {hackathon.rankingsPublished ? "Completed" : 
-                               hackathon.scoresAggregated ? "Judging" : "Active"}
+                               hackathon.scoresAggregated ? "Judging" : 
+                               hackathon.isActive ? "Active" : "Ended"}
                             </span>
                           </div>
                           <div>

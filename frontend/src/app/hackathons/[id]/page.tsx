@@ -74,6 +74,9 @@ export default function HackathonDetailPage() {
   };
 
   const getStatusBadge = (hackathon: Hackathon) => {
+    const currentTime = Date.now();
+    const endTimeMs = hackathon.endDay * 24 * 60 * 60 * 1000; // Convert days to milliseconds
+    
     if (hackathon.rankingsPublished) {
       return (
         <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-500/20 text-green-400 border border-green-500/30">
@@ -88,14 +91,20 @@ export default function HackathonDetailPage() {
       );
     } else if (hackathon.isActive) {
       return (
-        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
+        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">
           🚀 Active
+        </span>
+      );
+    } else if (currentTime > endTimeMs) {
+      return (
+        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-500/20 text-gray-400 border border-gray-500/30">
+          ⏸️ Ended
         </span>
       );
     } else {
       return (
-        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-500/20 text-gray-400 border border-gray-500/30">
-          ⏸️ Inactive
+        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
+          ⏳ Upcoming
         </span>
       );
     }
