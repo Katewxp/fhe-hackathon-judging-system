@@ -233,6 +233,27 @@ class ContractService {
     }
   }
 
+  // Get a specific judge for a hackathon
+  async getJudge(hackathonId: number, judgeAddress: string): Promise<Judge> {
+    try {
+      const judgeData = await this.contract.getJudge(hackathonId, judgeAddress);
+      return {
+        address: judgeData[0],
+        isRegistered: judgeData[1],
+        hasSubmittedAllScores: judgeData[2],
+        projectsScored: Number(judgeData[3])
+      };
+    } catch (error) {
+      console.error("Failed to get judge:", error);
+      return {
+        address: judgeAddress,
+        isRegistered: false,
+        hasSubmittedAllScores: false,
+        projectsScored: 0
+      };
+    }
+  }
+
   // Get judges for a hackathon
   async getJudges(hackathonId: number): Promise<Judge[]> {
     try {

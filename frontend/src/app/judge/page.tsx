@@ -16,6 +16,7 @@ export default function JudgePage() {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [scores, setScores] = useState<{[projectId: number]: number}>({});
   const [submittingAll, setSubmittingAll] = useState(false);
+  const [isJudgeRegistered, setIsJudgeRegistered] = useState<{[hackathonId: number]: boolean}>({});
 
   useEffect(() => {
     if (account) {
@@ -41,6 +42,21 @@ export default function JudgePage() {
       const hackathonsData = await contractService.getHackathons();
       setHackathons(hackathonsData);
       console.log("Loaded hackathons for judge:", hackathonsData);
+      
+      // Check if current user is registered as judge for each hackathon
+      if (account) {
+        const judgeStatus: {[hackathonId: number]: boolean} = {};
+        for (const hackathon of hackathonsData) {
+          try {
+            const judgeData = await contractService.getJudge(hackathon.id, account);
+            judgeStatus[hackathon.id] = judgeData.isRegistered;
+          } catch (error) {
+            console.error(`Failed to check judge status for hackathon ${hackathon.id}:`, error);
+            judgeStatus[hackathon.id] = false;
+          }
+        }
+        setIsJudgeRegistered(judgeStatus);
+      }
     } catch (error) {
       console.error("Failed to load judge data:", error);
       showToast({
@@ -208,6 +224,61 @@ export default function JudgePage() {
     }));
   };
 
+  const registerAsJudge = async (hackathonId: number) => {
+    if (!account) return;
+    
+    try {
+      setLoading(true);
+      const success = await contractService.registerJudge(hackathonId, account);
+      
+      if (success) {
+        showToast({
+          type: "success",
+          title: "Judge Registration Successful!",
+          message: "You have been successfully registered as a judge for this hackathon.",
+          duration: 5000
+        });
+        
+        // Update judge status
+        setIsJudgeRegistered(prev => ({
+          ...prev,
+          [hackathonId]: true
+        }));
+        
+        // Reload data
+        await loadJudgeData();
+      } else {
+        showToast({
+          type: "error",
+          title: "Registration Failed",
+          message: "Failed to register as judge. Please try again.",
+          duration: 5000
+        });
+      }
+    } catch (error: any) {
+      console.error("Failed to register as judge:", error);
+      
+      let errorMessage = "An error occurred while registering as judge.";
+      
+      if (error.message?.includes("Already registered")) {
+        errorMessage = "You are already registered as a judge for this hackathon.";
+      } else if (error.message?.includes("Hackathon not found")) {
+        errorMessage = "Hackathon not found. Please try again.";
+      } else if (error.message?.includes("Hackathon not active")) {
+        errorMessage = "This hackathon is not currently active.";
+      }
+      
+      showToast({
+        type: "error",
+        title: "Registration Error",
+        message: errorMessage,
+        duration: 5000
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (!account) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
@@ -321,8 +392,7 @@ export default function JudgePage() {
                   .map((hackathon) => (
                     <div
                       key={hackathon.id}
-                      className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-6 hover:bg-white/20 transition-all duration-300 transform hover:scale-105 cursor-pointer"
-                      onClick={() => handleHackathonSelect(hackathon)}
+                      className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-6 hover:bg-white/20 transition-all duration-300 transform hover:scale-105"
                     >
                       <h3 className="text-xl font-semibold text-white mb-2">
                         {hackathon.name}
@@ -330,7 +400,7 @@ export default function JudgePage() {
                       <p className="text-gray-300 text-sm mb-4 line-clamp-3">
                         {hackathon.description}
                       </p>
-                      <div className="space-y-2 text-sm">
+                      <div className="space-y-2 text-sm mb-4">
                         <div className="flex justify-between">
                           <span className="text-gray-400">Projects:</span>
                           <span className="text-white">{hackathon.projectCount}</span>
@@ -339,12 +409,34 @@ export default function JudgePage() {
                           <span className="text-gray-400">Judges:</span>
                           <span className="text-white">{hackathon.judgeCount}</span>
                         </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Your Status:</span>
+                          <span className={`font-medium ${
+                            isJudgeRegistered[hackathon.id] 
+                              ? "text-green-400" 
+                              : "text-red-400"
+                          }`}>
+                            {isJudgeRegistered[hackathon.id] ? "Registered" : "Not Registered"}
+                          </span>
+                        </div>
                       </div>
-                      <div className="mt-4 text-center">
-                        <span className="text-yellow-400 text-sm font-medium">
-                          Click to Start Judging →
-                        </span>
-                      </div>
+                      
+                      {isJudgeRegistered[hackathon.id] ? (
+                        <button
+                          onClick={() => handleHackathonSelect(hackathon)}
+                          className="w-full px-4 py-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-medium rounded-lg hover:from-yellow-600 hover:to-orange-600 transition-all duration-300"
+                        >
+                          Start Judging →
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => registerAsJudge(hackathon.id)}
+                          disabled={loading}
+                          className="w-full px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-medium rounded-lg hover:from-blue-600 hover:to-purple-600 disabled:opacity-50 transition-all duration-300"
+                        >
+                          {loading ? "Registering..." : "Register as Judge"}
+                        </button>
+                      )}
                     </div>
                   ))}
               </div>
