@@ -261,18 +261,39 @@ class ContractService {
     score: number
   ): Promise<boolean> {
     try {
-      if (!this.signer) throw new Error("No signer available");
+      console.log("Submitting score:", { hackathonId, projectId, score, hasSigner: !!this.signer });
+      
+      if (!this.signer) {
+        console.error("No signer available for score submission");
+        throw new Error("No signer available");
+      }
 
       // Mock encrypted score and proof - replace with real FHE encryption
       const encryptedScore = ethers.toUtf8Bytes(`encrypted_${score}_${Date.now()}`);
       const proof = ethers.toUtf8Bytes(`proof_${score}_${Date.now()}`);
 
+      console.log("Calling contract.submitScore with:", { hackathonId, projectId, encryptedScore: encryptedScore.length, proof: proof.length });
+      
       const tx = await this.contract.submitScore(hackathonId, projectId, encryptedScore, proof);
-      await tx.wait();
+      console.log("Transaction sent:", tx.hash);
+      
+      const receipt = await tx.wait();
+      console.log("Transaction confirmed:", receipt);
+      
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to submit score:", error);
-      return false;
+      
+      // Provide more specific error messages
+      if (error.code === 'UNPREDICTABLE_GAS_LIMIT') {
+        console.error("Gas estimation failed - contract may not exist or function may fail");
+      } else if (error.code === 'INSUFFICIENT_FUNDS') {
+        console.error("Insufficient funds for transaction");
+      } else if (error.code === 'USER_REJECTED') {
+        console.error("User rejected the transaction");
+      }
+      
+      throw error; // Re-throw to let the calling code handle it
     }
   }
 

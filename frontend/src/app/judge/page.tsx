@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useWallet } from "@/contexts/WalletContext";
 import { contractService, Hackathon, Project, Judge } from "@/lib/contractService";
 import { useToast } from "@/components/Toast";
+import { ethers } from "ethers";
 
 export default function JudgePage() {
   const { account } = useWallet();
@@ -17,6 +18,18 @@ export default function JudgePage() {
   useEffect(() => {
     if (account) {
       loadJudgeData();
+    }
+  }, [account]);
+
+  // Set signer when account changes
+  useEffect(() => {
+    if (account && window.ethereum) {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      provider.getSigner().then(signer => {
+        contractService.setSigner(signer);
+      }).catch(error => {
+        console.error("Failed to set signer:", error);
+      });
     }
   }, [account]);
 
@@ -66,6 +79,8 @@ export default function JudgePage() {
     
     try {
       setLoading(true);
+      console.log("Attempting to submit score:", { hackathonId: selectedHackathon.id, projectId, score });
+      
       const success = await contractService.submitScore(selectedHackathon.id, projectId, score);
       
       if (success) {
@@ -85,12 +100,25 @@ export default function JudgePage() {
           duration: 5000
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to submit score:", error);
+      
+      let errorMessage = "An error occurred while submitting the score.";
+      
+      if (error.message?.includes("No signer available")) {
+        errorMessage = "Wallet not connected. Please connect your wallet first.";
+      } else if (error.code === 'UNPREDICTABLE_GAS_LIMIT') {
+        errorMessage = "Contract interaction failed. The contract may not be deployed or the function may fail.";
+      } else if (error.code === 'INSUFFICIENT_FUNDS') {
+        errorMessage = "Insufficient funds for transaction.";
+      } else if (error.code === 'USER_REJECTED') {
+        errorMessage = "Transaction was rejected by user.";
+      }
+      
       showToast({
         type: "error",
         title: "Submission Error",
-        message: "An error occurred while submitting the score.",
+        message: errorMessage,
         duration: 5000
       });
     } finally {
