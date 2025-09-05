@@ -260,14 +260,42 @@ class ContractService {
   // Register a judge
   async registerJudge(hackathonId: number, judgeAddress: string): Promise<boolean> {
     try {
-      if (!this.signer) throw new Error("No signer available");
+      console.log("ContractService: Registering judge:", { hackathonId, judgeAddress });
+      
+      if (!this.signer) {
+        console.error("ContractService: No signer available for judge registration");
+        throw new Error("No signer available");
+      }
 
+      // Validate address format
+      if (!judgeAddress.startsWith('0x') || judgeAddress.length !== 42) {
+        console.error("ContractService: Invalid address format:", judgeAddress);
+        throw new Error("Invalid address format");
+      }
+
+      console.log("ContractService: Calling contract.registerJudge...");
       const tx = await this.contract.registerJudge(hackathonId, judgeAddress);
-      await tx.wait();
+      console.log("ContractService: Transaction sent:", tx.hash);
+      
+      const receipt = await tx.wait();
+      console.log("ContractService: Transaction confirmed:", receipt);
+      
       return true;
-    } catch (error) {
-      console.error("Failed to register judge:", error);
-      return false;
+    } catch (error: any) {
+      console.error("ContractService: Failed to register judge:", error);
+      
+      // Provide more specific error messages
+      if (error.message?.includes("ENS name")) {
+        console.error("ContractService: ENS name error - invalid address format");
+      } else if (error.code === 'UNPREDICTABLE_GAS_LIMIT') {
+        console.error("ContractService: Gas estimation failed - contract may not exist or function may fail");
+      } else if (error.code === 'INSUFFICIENT_FUNDS') {
+        console.error("ContractService: Insufficient funds for transaction");
+      } else if (error.code === 'USER_REJECTED') {
+        console.error("ContractService: User rejected the transaction");
+      }
+      
+      throw error; // Re-throw to let the calling code handle it
     }
   }
 

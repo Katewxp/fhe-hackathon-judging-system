@@ -162,16 +162,29 @@ export default function OrganizePage() {
   const addJudge = async () => {
     if (!judgeAddress || !selectedHackathon) return;
 
+    // Validate address format
+    const trimmedAddress = judgeAddress.trim();
+    if (!trimmedAddress.startsWith('0x') || trimmedAddress.length !== 42) {
+      showToast({
+        type: "error",
+        title: "Invalid Address",
+        message: "Please enter a valid Ethereum address (0x followed by 40 characters).",
+        duration: 5000
+      });
+      return;
+    }
+
     try {
       setLoading(true);
+      console.log("Registering judge:", { hackathonId: selectedHackathon.id, judgeAddress: trimmedAddress });
       
-      const success = await contractService.registerJudge(selectedHackathon.id, judgeAddress);
+      const success = await contractService.registerJudge(selectedHackathon.id, trimmedAddress);
       
       if (success) {
         showToast({
           type: "success",
           title: "Judge Added Successfully! 👨‍⚖️",
-          message: `Judge ${judgeAddress.slice(0, 6)}...${judgeAddress.slice(-4)} has been registered for ${selectedHackathon.name}.`,
+          message: `Judge ${trimmedAddress.slice(0, 6)}...${trimmedAddress.slice(-4)} has been registered for ${selectedHackathon.name}.`,
           duration: 6000
         });
         
@@ -188,12 +201,27 @@ export default function OrganizePage() {
           duration: 6000
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to add judge:", error);
+      
+      let errorMessage = "An error occurred while registering the judge. Please try again.";
+      
+      if (error.message?.includes("ENS name")) {
+        errorMessage = "Invalid address format. Please enter a valid Ethereum address.";
+      } else if (error.message?.includes("No signer available")) {
+        errorMessage = "Wallet not connected. Please connect your wallet first.";
+      } else if (error.code === 'UNPREDICTABLE_GAS_LIMIT') {
+        errorMessage = "Contract interaction failed. The judge may already be registered or the contract may not be deployed.";
+      } else if (error.code === 'INSUFFICIENT_FUNDS') {
+        errorMessage = "Insufficient funds for transaction.";
+      } else if (error.code === 'USER_REJECTED') {
+        errorMessage = "Transaction was rejected by user.";
+      }
+      
       showToast({
         type: "error",
         title: "Judge Registration Error",
-        message: "An error occurred while registering the judge. Please try again.",
+        message: errorMessage,
         duration: 6000
       });
     } finally {
@@ -661,17 +689,28 @@ export default function OrganizePage() {
                           type="text"
                           placeholder="Judge wallet address (0x...)"
                           value={judgeAddress}
-                          onChange={(e) => setJudgeAddress(e.target.value)}
-                          className="flex-1 px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
+                          onChange={(e) => setJudgeAddress(e.target.value.trim())}
+                          onKeyPress={(e) => {
+                            if (e.key === 'Enter' && !loading && judgeAddress.trim()) {
+                              addJudge();
+                            }
+                          }}
+                          className="flex-1 px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500"
                         />
                         <button
                           onClick={addJudge}
-                          disabled={loading || !judgeAddress}
-                          className="px-6 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 disabled:opacity-50 text-white font-medium rounded-lg transition-all duration-300"
+                          disabled={loading || !judgeAddress.trim()}
+                          className="px-6 py-2 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 disabled:opacity-50 text-black font-medium rounded-lg transition-all duration-300"
                         >
                           {loading ? "Adding..." : "Add Judge"}
                         </button>
                       </div>
+                      {judgeAddress && !judgeAddress.startsWith('0x') && (
+                        <p className="text-red-400 text-sm mt-2">⚠️ Address must start with 0x</p>
+                      )}
+                      {judgeAddress && judgeAddress.startsWith('0x') && judgeAddress.length !== 42 && (
+                        <p className="text-red-400 text-sm mt-2">⚠️ Address must be 42 characters long</p>
+                      )}
                     </div>
 
                     {judges.length === 0 ? (
