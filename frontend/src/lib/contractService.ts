@@ -208,9 +208,26 @@ class ContractService {
         }
       }
 
+      // If no projects found from contract, use mock data for demonstration
+      if (projects.length === 0 && (hackathonId === 2 || hackathonId === 3)) {
+        const { getMockProjects } = await import('./mockData');
+        return getMockProjects(hackathonId);
+      }
+
       return projects;
     } catch (error) {
       console.error("Failed to get projects:", error);
+      
+      // Fallback to mock data for demonstration
+      if (hackathonId === 2 || hackathonId === 3) {
+        try {
+          const { getMockProjects } = await import('./mockData');
+          return getMockProjects(hackathonId);
+        } catch (mockError) {
+          console.error("Failed to load mock data:", mockError);
+        }
+      }
+      
       return [];
     }
   }
