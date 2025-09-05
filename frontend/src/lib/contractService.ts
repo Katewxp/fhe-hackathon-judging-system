@@ -208,9 +208,6 @@ class ContractService {
         }
       }
 
-      // Add locally stored projects
-      const localProjects = this.getLocalProjects(hackathonId);
-      projects.push(...localProjects);
 
       // If no projects found from contract, use mock data for demonstration
       if (projects.length === 0 && (hackathonId === 2 || hackathonId === 3)) {
@@ -222,13 +219,8 @@ class ContractService {
     } catch (error) {
       console.error("Failed to get projects:", error);
       
-      // Fallback to local projects and mock data for demonstration
+      // Fallback to mock data for demonstration
       if (hackathonId === 2 || hackathonId === 3) {
-        const localProjects = this.getLocalProjects(hackathonId);
-        if (localProjects.length > 0) {
-          return localProjects;
-        }
-        
         try {
           const { getMockProjects } = await import('./mockData');
           return getMockProjects(hackathonId);
@@ -308,16 +300,8 @@ class ContractService {
         throw new Error("No signer available");
       }
 
-      // Combine description with URLs if provided
-      let fullDescription = description;
-      if (githubUrl || demoUrl) {
-        fullDescription += "\n\n";
-        if (githubUrl) fullDescription += `GitHub: ${githubUrl}\n`;
-        if (demoUrl) fullDescription += `Demo: ${demoUrl}\n`;
-      }
-
       console.log("ContractService: Calling contract.registerProject...");
-      const tx = await this.contract.registerProject(hackathonId, name, fullDescription);
+      const tx = await this.contract.registerProject(hackathonId, name, description, githubUrl, demoUrl);
       console.log("ContractService: Transaction sent:", tx.hash);
       
       const receipt = await tx.wait();
@@ -336,61 +320,10 @@ class ContractService {
         console.error("ContractService: User rejected the transaction");
       }
       
-      // If contract call fails, store the project locally for demonstration
-      if (hackathonId === 2 || hackathonId === 3) {
-        console.log("ContractService: Storing project locally for demonstration");
-        this.storeProjectLocally(hackathonId, name, description, githubUrl, demoUrl);
-        return true; // Return true to indicate "success" for demo purposes
-      }
-      
       throw error; // Re-throw to let the calling code handle it
     }
   }
 
-  // Store project locally when contract call fails
-  private storeProjectLocally(
-    hackathonId: number,
-    name: string,
-    description: string,
-    githubUrl: string,
-    demoUrl: string
-  ): void {
-    try {
-      const storageKey = `hackathon_${hackathonId}_projects`;
-      const existingProjects = JSON.parse(localStorage.getItem(storageKey) || '[]');
-      
-      const newProject = {
-        id: existingProjects.length,
-        name,
-        description: description + (githubUrl || demoUrl ? `\n\nGitHub: ${githubUrl}\nDemo: ${demoUrl}` : ''),
-        githubUrl,
-        demoUrl,
-        teamLead: "0x" + Math.random().toString(16).substr(2, 40), // Generate random address
-        isRegistered: true,
-        publicRank: 0,
-        isLocal: true // Mark as local project
-      };
-      
-      existingProjects.push(newProject);
-      localStorage.setItem(storageKey, JSON.stringify(existingProjects));
-      
-      console.log("ContractService: Project stored locally:", newProject);
-    } catch (error) {
-      console.error("ContractService: Failed to store project locally:", error);
-    }
-  }
-
-  // Get locally stored projects
-  private getLocalProjects(hackathonId: number): Project[] {
-    try {
-      const storageKey = `hackathon_${hackathonId}_projects`;
-      const localProjects = JSON.parse(localStorage.getItem(storageKey) || '[]');
-      return localProjects;
-    } catch (error) {
-      console.error("ContractService: Failed to get local projects:", error);
-      return [];
-    }
-  }
 
   // Register a judge
   async registerJudge(hackathonId: number, judgeAddress: string): Promise<boolean> {

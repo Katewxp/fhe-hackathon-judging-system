@@ -2,7 +2,7 @@ export const CONTRACT_ADDRESS = "0x2aE943E41947954CD782698F906d95B7104562A1";
 export const CONTRACT_ABI = [
   // HackathonJudging ABI - matching deployed contract
   "function createHackathon(string name, string description, uint256 startTime, uint256 endTime) external",
-  "function registerProject(uint256 hackathonId, string name, string description) external",
+  "function registerProject(uint256 hackathonId, string name, string description, string githubUrl, string demoUrl) external",
   "function registerJudge(uint256 hackathonId, address judgeAddress) external",
   "function submitScore(uint256 hackathonId, uint256 projectId, bytes calldata encryptedScore, bytes calldata proof) external",
   "function aggregateScores(uint256 hackathonId, uint256 projectId) external",
