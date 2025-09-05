@@ -14,6 +14,8 @@ export default function JudgePage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [scores, setScores] = useState<{[projectId: number]: number}>({});
+  const [submittingAll, setSubmittingAll] = useState(false);
 
   useEffect(() => {
     if (account) {
@@ -124,6 +126,86 @@ export default function JudgePage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const submitAllScores = async () => {
+    if (!selectedHackathon) return;
+    
+    const projectIds = Object.keys(scores).map(Number);
+    if (projectIds.length === 0) {
+      showToast({
+        type: "warning",
+        title: "No Scores to Submit",
+        message: "Please enter scores for at least one project before submitting.",
+        duration: 5000
+      });
+      return;
+    }
+    
+    try {
+      setSubmittingAll(true);
+      let successCount = 0;
+      let failCount = 0;
+      
+      showToast({
+        type: "info",
+        title: "Submitting Scores",
+        message: `Submitting ${projectIds.length} scores...`,
+        duration: 3000
+      });
+      
+      for (const projectId of projectIds) {
+        try {
+          const success = await contractService.submitScore(selectedHackathon.id, projectId, scores[projectId]);
+          if (success) {
+            successCount++;
+          } else {
+            failCount++;
+          }
+          // Add small delay between submissions
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        } catch (error) {
+          console.error(`Failed to submit score for project ${projectId}:`, error);
+          failCount++;
+        }
+      }
+      
+      if (successCount > 0) {
+        showToast({
+          type: "success",
+          title: "Batch Submission Complete",
+          message: `Successfully submitted ${successCount} scores${failCount > 0 ? `, ${failCount} failed` : ''}`,
+          duration: 8000
+        });
+        // Clear scores and reload projects
+        setScores({});
+        loadHackathonProjects(selectedHackathon.id);
+      } else {
+        showToast({
+          type: "error",
+          title: "All Submissions Failed",
+          message: "Failed to submit any scores. Please try again.",
+          duration: 8000
+        });
+      }
+    } catch (error) {
+      console.error("Failed to submit all scores:", error);
+      showToast({
+        type: "error",
+        title: "Batch Submission Error",
+        message: "An error occurred while submitting scores. Please try again.",
+        duration: 8000
+      });
+    } finally {
+      setSubmittingAll(false);
+    }
+  };
+
+  const updateScore = (projectId: number, score: number) => {
+    setScores(prev => ({
+      ...prev,
+      [projectId]: score
+    }));
   };
 
   if (!account) {
@@ -316,19 +398,34 @@ export default function JudgePage() {
                           <p className="text-gray-300 text-sm mb-3">
                             {project.description}
                           </p>
-                          {project.githubUrl && (
-                            <a
-                              href={project.githubUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center text-blue-400 hover:text-blue-300 text-sm"
-                            >
-                              <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clipRule="evenodd" />
-                              </svg>
-                              View on GitHub
-                            </a>
-                          )}
+                          <div className="flex flex-wrap gap-3 mb-3">
+                            {project.githubUrl && (
+                              <a
+                                href={project.githubUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center text-blue-400 hover:text-blue-300 text-sm"
+                              >
+                                <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clipRule="evenodd" />
+                                </svg>
+                                GitHub
+                              </a>
+                            )}
+                            {project.demoUrl && (
+                              <a
+                                href={project.demoUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center text-green-400 hover:text-green-300 text-sm"
+                              >
+                                <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                                </svg>
+                                Demo
+                              </a>
+                            )}
+                          </div>
                         </div>
                         <div className="ml-4">
                           <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
@@ -346,19 +443,19 @@ export default function JudgePage() {
                             type="number"
                             min="1"
                             max="10"
-                            placeholder="Enter score"
+                            placeholder="Enter score (1-10)"
+                            value={scores[project.id] || ''}
+                            onChange={(e) => updateScore(project.id, parseInt(e.target.value) || 0)}
                             className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                           />
                         </div>
                         <button
                           onClick={() => {
-                            const scoreInput = document.querySelector(`input[placeholder="Enter score"]`) as HTMLInputElement;
-                            if (scoreInput && scoreInput.value) {
-                              submitScore(project.id, parseInt(scoreInput.value));
-                              scoreInput.value = '';
+                            if (scores[project.id]) {
+                              submitScore(project.id, scores[project.id]);
                             }
                           }}
-                          disabled={loading}
+                          disabled={loading || !scores[project.id]}
                           className="px-6 py-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-medium rounded-lg hover:from-yellow-600 hover:to-orange-600 disabled:opacity-50 transition-all duration-300"
                         >
                           {loading ? "Submitting..." : "Submit Score"}
@@ -367,6 +464,34 @@ export default function JudgePage() {
                     </div>
                   ))}
                 </div>
+                
+                {/* Batch Submit Button */}
+                {projects.length > 0 && (
+                  <div className="mt-8 flex justify-center">
+                    <button
+                      onClick={submitAllScores}
+                      disabled={submittingAll || Object.keys(scores).length === 0}
+                      className="px-8 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white font-medium rounded-lg hover:from-green-600 hover:to-emerald-600 disabled:opacity-50 transition-all duration-300 flex items-center gap-2"
+                    >
+                      {submittingAll ? (
+                        <>
+                          <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          Submitting All...
+                        </>
+                      ) : (
+                        <>
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          Submit All Scores ({Object.keys(scores).length})
+                        </>
+                      )}
+                    </button>
+                  </div>
+                )}
               )}
             </div>
           </div>
