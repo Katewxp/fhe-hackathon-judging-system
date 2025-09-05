@@ -56,7 +56,7 @@ class ContractService {
   }
 
   // Sort hackathons by priority: Active > Judging > Upcoming > Ended > Completed
-  static sortHackathons(hackathons: Hackathon[]): Hackathon[] {
+  sortHackathons(hackathons: Hackathon[]): Hackathon[] {
     return hackathons.sort((a, b) => {
       const getPriority = (hackathon: Hackathon) => {
         if (hackathon.isActive) return 1;
