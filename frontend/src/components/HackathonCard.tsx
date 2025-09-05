@@ -40,8 +40,8 @@ export default function HackathonCard({
 
   const getStatusColor = () => {
     if (rankingsPublished) return "from-green-500 to-emerald-500";
-    if (scoresAggregated) return "from-yellow-500 to-orange-500";
-    if (isActive) return "from-blue-500 to-cyan-500";
+    if (scoresAggregated) return "from-orange-500 to-red-500";
+    if (isActive) return "from-yellow-500 to-orange-500";
     return "from-gray-500 to-slate-500";
   };
 
@@ -71,7 +71,7 @@ export default function HackathonCard({
       <div className="space-y-4">
         {/* Title */}
         <div>
-          <h3 className="text-xl font-bold text-white mb-2 group-hover:text-cyan-400 transition-colors duration-300">
+          <h3 className="text-xl font-bold text-white mb-2 group-hover:text-yellow-400 transition-colors duration-300">
             {name}
           </h3>
           <p className="text-gray-300 text-sm leading-relaxed line-clamp-3">
@@ -92,11 +92,11 @@ export default function HackathonCard({
         {/* Stats */}
         <div className="grid grid-cols-2 gap-4">
           <div className="text-center p-3 bg-white/5 rounded-xl">
-            <div className="text-2xl font-bold text-cyan-400">{projectCount}</div>
+            <div className="text-2xl font-bold text-yellow-400">{projectCount}</div>
             <div className="text-xs text-gray-400">Projects</div>
           </div>
           <div className="text-center p-3 bg-white/5 rounded-xl">
-            <div className="text-2xl font-bold text-purple-400">{judgeCount}</div>
+            <div className="text-2xl font-bold text-orange-400">{judgeCount}</div>
             <div className="text-xs text-gray-400">Judges</div>
           </div>
         </div>
@@ -123,7 +123,7 @@ export default function HackathonCard({
         <div className="pt-4">
           <Link
             href={`/hackathons/${id}`}
-            className="block w-full text-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-blue-500/25"
+            className="block w-full text-center px-6 py-3 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-yellow-500/25"
           >
             {rankingsPublished ? "View Results" : scoresAggregated ? "View Scores" : "View Details"}
           </Link>
@@ -131,7 +131,7 @@ export default function HackathonCard({
       </div>
 
       {/* Hover Effect */}
-      <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
     </div>
   );
 }

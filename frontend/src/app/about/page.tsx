@@ -35,12 +35,12 @@ export default function AboutPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       {/* Hero Section */}
       <div className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
-            About <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">FHE Judge</span>
+            About <span className="bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">FHE Judge</span>
           </h1>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
             The world's first privacy-preserving hackathon judging platform powered by 
@@ -68,7 +68,7 @@ export default function AboutPage() {
               </p>
               <Link
                 href="/hackathons"
-                className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105"
+                className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-semibold rounded-full hover:from-yellow-600 hover:to-orange-600 transition-all duration-300 transform hover:scale-105"
               >
                 Explore Hackathons
               </Link>
@@ -106,7 +106,7 @@ export default function AboutPage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-white mb-6">
-              Powered by <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">FHE Technology</span>
+              Powered by <span className="bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">FHE Technology</span>
             </h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
               Fully Homomorphic Encryption enables computation on encrypted data without decryption, 
@@ -151,7 +151,7 @@ export default function AboutPage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-white mb-6">
-              Get <span className="bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">Connected</span>
+              Get <span className="bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">Connected</span>
             </h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
               Explore our resources, join the community, and stay updated with the latest developments.
@@ -169,13 +169,13 @@ export default function AboutPage() {
               >
                 <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-6 hover:bg-white/20 transition-all duration-300 transform hover:scale-105 cursor-pointer">
                   <div className="text-4xl mb-4">{link.icon}</div>
-                  <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-blue-400 transition-colors">
+                  <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-yellow-400 transition-colors">
                     {link.name}
                   </h3>
                   <p className="text-gray-300 text-sm">
                     {link.description}
                   </p>
-                  <div className="mt-4 flex items-center text-blue-400 text-sm font-medium group-hover:text-blue-300 transition-colors">
+                  <div className="mt-4 flex items-center text-yellow-400 text-sm font-medium group-hover:text-yellow-300 transition-colors">
                     Visit Link
                     <svg className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -193,7 +193,7 @@ export default function AboutPage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-white mb-6">
-              Meet Our <span className="bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">Team</span>
+              Meet Our <span className="bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">Team</span>
             </h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
               A passionate group of blockchain developers, cryptographers, and privacy advocates 
@@ -203,7 +203,7 @@ export default function AboutPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-8 text-center">
-              <div className="w-24 h-24 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mx-auto mb-6 flex items-center justify-center">
+              <div className="w-24 h-24 bg-gradient-to-r from-yellow-500 to-orange-600 rounded-full mx-auto mb-6 flex items-center justify-center">
                 <span className="text-3xl font-bold text-white">👨‍💻</span>
               </div>
               <h3 className="text-xl font-semibold text-white mb-2">Lead Developer</h3>
@@ -213,7 +213,7 @@ export default function AboutPage() {
               </p>
             </div>
             <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-8 text-center">
-              <div className="w-24 h-24 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full mx-auto mb-6 flex items-center justify-center">
+              <div className="w-24 h-24 bg-gradient-to-r from-orange-500 to-red-600 rounded-full mx-auto mb-6 flex items-center justify-center">
                 <span className="text-3xl font-bold text-white">🔐</span>
               </div>
               <h3 className="text-xl font-semibold text-white mb-2">Cryptography Expert</h3>
@@ -223,7 +223,7 @@ export default function AboutPage() {
               </p>
             </div>
             <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-8 text-center">
-              <div className="w-24 h-24 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full mx-auto mb-6 flex items-center justify-center">
+              <div className="w-24 h-24 bg-gradient-to-r from-amber-500 to-yellow-600 rounded-full mx-auto mb-6 flex items-center justify-center">
                 <span className="text-3xl font-bold text-white">🎨</span>
               </div>
               <h3 className="text-xl font-semibold text-white mb-2">UX Designer</h3>
@@ -305,7 +305,7 @@ export default function AboutPage() {
       <div className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl font-bold text-white mb-6">
-            Ready to <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Join</span> the Revolution?
+            Ready to <span className="bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">Join</span> the Revolution?
           </h2>
           <p className="text-xl text-gray-300 mb-8">
             Experience the future of hackathon judging with privacy-preserving technology. 
@@ -314,7 +314,7 @@ export default function AboutPage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/hackathons"
-              className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105"
+              className="px-8 py-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-semibold rounded-full hover:from-yellow-600 hover:to-orange-600 transition-all duration-300 transform hover:scale-105"
             >
               Explore Hackathons
             </Link>

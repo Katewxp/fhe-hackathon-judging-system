@@ -60,7 +60,7 @@ export default function HackathonsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-white mx-auto mb-4"></div>
           <p className="text-white text-xl">Loading hackathons...</p>
@@ -70,12 +70,12 @@ export default function HackathonsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       {/* Hero Section */}
       <div className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
-            <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
               Discover
             </span>{" "}
             Hackathons
@@ -94,7 +94,7 @@ export default function HackathonsPage() {
                 placeholder="Search hackathons..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-6 py-4 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-6 py-4 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
               />
               <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
                 <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -116,7 +116,7 @@ export default function HackathonsPage() {
                   onClick={() => setFilter(filterOption.id)}
                   className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${
                     filter === filterOption.id
-                      ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
+                      ? "bg-gradient-to-r from-yellow-500 to-orange-500 text-black shadow-lg"
                       : "bg-white/10 text-gray-300 hover:bg-white/20"
                   }`}
                 >
@@ -146,7 +146,7 @@ export default function HackathonsPage() {
                   setSearchTerm("");
                   setFilter("all");
                 }}
-                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-300"
+                className="px-6 py-3 bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-semibold rounded-full hover:from-yellow-600 hover:to-orange-600 transition-all duration-300"
               >
                 Clear Filters
               </button>
@@ -211,7 +211,7 @@ export default function HackathonsPage() {
                     <div className="flex space-x-3">
                       <Link
                         href={`/hackathons/${hackathon.id}`}
-                        className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-center py-2 px-4 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300"
+                        className="flex-1 bg-gradient-to-r from-yellow-500 to-orange-500 text-black text-center py-2 px-4 rounded-lg hover:from-yellow-600 hover:to-orange-600 transition-all duration-300"
                       >
                         View Details
                       </Link>
@@ -243,7 +243,7 @@ export default function HackathonsPage() {
       <div className="py-20 px-4 sm:px-6 lg:px-8 bg-white/5">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl font-bold text-white mb-6">
-            Ready to <span className="bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">Organize</span> Your Own?
+            Ready to <span className="bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">Organize</span> Your Own?
           </h2>
           <p className="text-xl text-gray-300 mb-8">
             Create a hackathon and bring together the brightest minds in technology. 
@@ -251,7 +251,7 @@ export default function HackathonsPage() {
           </p>
           <Link
             href="/organize"
-            className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold rounded-full transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-green-500/25"
+            className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black font-semibold rounded-full transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-yellow-500/25"
           >
             Create Hackathon
             <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

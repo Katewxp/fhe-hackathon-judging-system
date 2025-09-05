@@ -305,7 +305,7 @@ export default function OrganizePage() {
 
   if (!account) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
         <div className="text-center">
           <div className="text-6xl mb-6">🔐</div>
           <h1 className="text-3xl font-bold text-white mb-4">Wallet Required</h1>
@@ -327,12 +327,12 @@ export default function OrganizePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       {/* Header */}
       <div className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
-            <span className="bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
               Organize
             </span>{" "}
             Dashboard
@@ -345,23 +345,23 @@ export default function OrganizePage() {
           {/* Organizer Stats */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
             <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl p-6">
-              <div className="text-3xl font-bold text-cyan-400 mb-2">{hackathons.length}</div>
+              <div className="text-3xl font-bold text-yellow-400 mb-2">{hackathons.length}</div>
               <div className="text-gray-400">Hackathons</div>
             </div>
             <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl p-6">
-              <div className="text-3xl font-bold text-purple-400 mb-2">
+              <div className="text-3xl font-bold text-orange-400 mb-2">
                 {hackathons.reduce((sum, h) => sum + h.projectCount, 0)}
               </div>
               <div className="text-gray-400">Total Projects</div>
             </div>
             <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl p-6">
-              <div className="text-3xl font-bold text-green-400 mb-2">
+              <div className="text-3xl font-bold text-amber-400 mb-2">
                 {hackathons.reduce((sum, h) => sum + h.judgeCount, 0)}
               </div>
               <div className="text-gray-400">Total Judges</div>
             </div>
             <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl p-6">
-              <div className="text-3xl font-bold text-blue-400 mb-2">
+              <div className="text-3xl font-bold text-yellow-400 mb-2">
                 {hackathons.filter(h => h.rankingsPublished).length}
               </div>
               <div className="text-gray-400">Completed</div>
@@ -372,7 +372,7 @@ export default function OrganizePage() {
           <div className="mt-8">
             <button
               onClick={() => setShowCreateModal(true)}
-              className="px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold rounded-full transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-green-500/25"
+              className="px-8 py-4 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black font-semibold rounded-full transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-yellow-500/25"
             >
               Create New Hackathon
             </button>
@@ -397,7 +397,7 @@ export default function OrganizePage() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-6 py-3 mx-2 mb-2 rounded-full font-medium transition-all duration-300 ${
                   activeTab === tab.id
-                    ? "bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg"
+                    ? "bg-gradient-to-r from-yellow-500 to-orange-500 text-black shadow-lg"
                     : "bg-white/10 text-gray-300 hover:bg-white/20"
                 }`}
               >
@@ -419,7 +419,7 @@ export default function OrganizePage() {
                     <p className="text-gray-300 mb-8">Create your first hackathon to get started!</p>
                     <button
                       onClick={() => setShowCreateModal(true)}
-                      className="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-full hover:from-green-700 hover:to-emerald-700 transition-all duration-300"
+                      className="px-6 py-3 bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-semibold rounded-full hover:from-yellow-600 hover:to-orange-600 transition-all duration-300"
                     >
                       Create Hackathon
                     </button>
@@ -510,7 +510,7 @@ export default function OrganizePage() {
                     <p className="text-gray-300 mb-8">Create your first hackathon to get started!</p>
                     <button
                       onClick={() => setShowCreateModal(true)}
-                      className="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-full hover:from-green-700 hover:to-emerald-700 transition-all duration-300"
+                      className="px-6 py-3 bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-semibold rounded-full hover:from-yellow-600 hover:to-orange-600 transition-all duration-300"
                     >
                       Create Hackathon
                     </button>

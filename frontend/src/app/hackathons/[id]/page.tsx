@@ -103,7 +103,7 @@ export default function HackathonDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-white mx-auto mb-4"></div>
           <p className="text-white text-xl">Loading hackathon details...</p>
@@ -114,7 +114,7 @@ export default function HackathonDetailPage() {
 
   if (!hackathon) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
         <div className="text-center">
           <div className="text-6xl mb-6">❌</div>
           <h2 className="text-3xl font-bold text-white mb-4">
@@ -125,7 +125,7 @@ export default function HackathonDetailPage() {
           </p>
           <Link
             href="/hackathons"
-            className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105"
+            className="px-8 py-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-semibold rounded-full hover:from-yellow-600 hover:to-orange-600 transition-all duration-300 transform hover:scale-105"
           >
             Back to Hackathons
           </Link>
@@ -135,7 +135,7 @@ export default function HackathonDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <div className="mb-8">
@@ -143,7 +143,7 @@ export default function HackathonDetailPage() {
             <div>
               <Link
                 href="/hackathons"
-                className="inline-flex items-center text-blue-400 hover:text-blue-300 mb-4 transition-colors duration-200"
+                className="inline-flex items-center text-yellow-400 hover:text-yellow-300 mb-4 transition-colors duration-200"
               >
                 <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -175,19 +175,19 @@ export default function HackathonDetailPage() {
           {/* Stats Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl p-4 text-center">
-              <div className="text-2xl font-bold text-blue-400 mb-1">
+              <div className="text-2xl font-bold text-yellow-400 mb-1">
                 {hackathon.projectCount}
               </div>
               <div className="text-sm text-gray-400">Projects</div>
             </div>
             <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl p-4 text-center">
-              <div className="text-2xl font-bold text-green-400 mb-1">
+              <div className="text-2xl font-bold text-orange-400 mb-1">
                 {hackathon.judgeCount}
               </div>
               <div className="text-sm text-gray-400">Judges</div>
             </div>
             <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl p-4 text-center">
-              <div className="text-2xl font-bold text-purple-400 mb-1">
+              <div className="text-2xl font-bold text-amber-400 mb-1">
                 {formatDate(hackathon.startDay)}
               </div>
               <div className="text-sm text-gray-400">Start Date</div>
@@ -214,7 +214,7 @@ export default function HackathonDetailPage() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${
                   activeTab === tab.id
-                    ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
+                    ? "bg-gradient-to-r from-yellow-500 to-orange-500 text-black shadow-lg"
                     : "text-gray-300 hover:text-white"
                 }`}
               >
@@ -272,19 +272,19 @@ export default function HackathonDetailPage() {
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
-                    <div className="text-3xl font-bold text-blue-400 mb-2">
+                    <div className="text-3xl font-bold text-yellow-400 mb-2">
                       {hackathon.projectCount}
                     </div>
                     <div className="text-sm text-gray-400">Projects Registered</div>
                   </div>
                   <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
-                    <div className="text-3xl font-bold text-green-400 mb-2">
+                    <div className="text-3xl font-bold text-orange-400 mb-2">
                       {hackathon.judgeCount}
                     </div>
                     <div className="text-sm text-gray-400">Judges Assigned</div>
                   </div>
                   <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
-                    <div className="text-3xl font-bold text-purple-400 mb-2">
+                    <div className="text-3xl font-bold text-amber-400 mb-2">
                       {hackathon.scoresAggregated ? "✓" : "⏳"}
                     </div>
                     <div className="text-sm text-gray-400">Scores Aggregated</div>
@@ -339,7 +339,7 @@ export default function HackathonDetailPage() {
                                   href={project.githubUrl}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-blue-400 hover:text-blue-300"
+                                  className="text-yellow-400 hover:text-yellow-300"
                                 >
                                   View Repository
                                 </a>
@@ -352,7 +352,7 @@ export default function HackathonDetailPage() {
                                   href={project.demoUrl}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-green-400 hover:text-green-300"
+                                  className="text-orange-400 hover:text-orange-300"
                                 >
                                   Live Demo
                                 </a>
@@ -361,7 +361,7 @@ export default function HackathonDetailPage() {
                           </div>
                         </div>
                         <div className="ml-4">
-                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">
                             Project {project.id + 1}
                           </span>
                         </div>

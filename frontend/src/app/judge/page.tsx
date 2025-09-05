@@ -100,7 +100,7 @@ export default function JudgePage() {
 
   if (!account) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
         <div className="text-center">
           <div className="text-6xl mb-6">🔐</div>
           <h2 className="text-3xl font-bold text-white mb-4">
@@ -109,7 +109,7 @@ export default function JudgePage() {
           <p className="text-xl text-gray-300 mb-8">
             Please connect your wallet to access the judge dashboard.
           </p>
-          <button className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105">
+          <button className="px-8 py-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-semibold rounded-full hover:from-yellow-600 hover:to-orange-600 transition-all duration-300 transform hover:scale-105">
             Connect Wallet
           </button>
         </div>
@@ -119,7 +119,7 @@ export default function JudgePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-white mx-auto mb-4"></div>
           <p className="text-white text-xl">Loading judge data...</p>
@@ -129,7 +129,7 @@ export default function JudgePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-white mb-4">
@@ -148,7 +148,7 @@ export default function JudgePage() {
               onClick={() => setActiveTab("dashboard")}
               className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${
                 activeTab === "dashboard"
-                  ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
+                  ? "bg-gradient-to-r from-yellow-500 to-orange-500 text-black shadow-lg"
                   : "text-gray-300 hover:text-white"
               }`}
             >
@@ -158,7 +158,7 @@ export default function JudgePage() {
               onClick={() => setActiveTab("judging")}
               className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${
                 activeTab === "judging"
-                  ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
+                  ? "bg-gradient-to-r from-yellow-500 to-orange-500 text-black shadow-lg"
                   : "text-gray-300 hover:text-white"
               }`}
             >
@@ -176,7 +176,7 @@ export default function JudgePage() {
                 <h3 className="text-xl font-semibold text-white mb-2">
                   Active Hackathons
                 </h3>
-                <p className="text-3xl font-bold text-blue-400">
+                <p className="text-3xl font-bold text-yellow-400">
                   {hackathons.filter(h => h.isActive).length}
                 </p>
               </div>
@@ -185,7 +185,7 @@ export default function JudgePage() {
                 <h3 className="text-xl font-semibold text-white mb-2">
                   Total Projects
                 </h3>
-                <p className="text-3xl font-bold text-green-400">
+                <p className="text-3xl font-bold text-orange-400">
                   {hackathons.reduce((sum, h) => sum + h.projectCount, 0)}
                 </p>
               </div>
@@ -194,7 +194,7 @@ export default function JudgePage() {
                 <h3 className="text-xl font-semibold text-white mb-2">
                   Judging Status
                 </h3>
-                <p className="text-3xl font-bold text-purple-400">
+                <p className="text-3xl font-bold text-amber-400">
                   {hackathons.filter(h => h.scoresAggregated).length}
                 </p>
                 <p className="text-sm text-gray-400">Completed</p>
@@ -231,7 +231,7 @@ export default function JudgePage() {
                         </div>
                       </div>
                       <div className="mt-4 text-center">
-                        <span className="text-blue-400 text-sm font-medium">
+                        <span className="text-yellow-400 text-sm font-medium">
                           Click to Start Judging →
                         </span>
                       </div>
@@ -319,7 +319,7 @@ export default function JudgePage() {
                             min="1"
                             max="10"
                             placeholder="Enter score"
-                            className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                           />
                         </div>
                         <button
@@ -331,7 +331,7 @@ export default function JudgePage() {
                             }
                           }}
                           disabled={loading}
-                          className="px-6 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-medium rounded-lg hover:from-green-700 hover:to-emerald-700 disabled:opacity-50 transition-all duration-300"
+                          className="px-6 py-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-medium rounded-lg hover:from-yellow-600 hover:to-orange-600 disabled:opacity-50 transition-all duration-300"
                         >
                           {loading ? "Submitting..." : "Submit Score"}
                         </button>

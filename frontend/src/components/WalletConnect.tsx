@@ -37,8 +37,8 @@ export default function WalletConnect() {
   if (account && !isWrongNetwork) {
     return (
       <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-blue-500 rounded-full text-white font-medium">
-          <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+        <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full text-black font-medium">
+          <div className="w-2 h-2 bg-black rounded-full animate-pulse"></div>
           {formatAddress(account)}
         </div>
         <button
@@ -66,11 +66,11 @@ export default function WalletConnect() {
     <button
       onClick={connect}
       disabled={isConnecting}
-      className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 text-white font-semibold rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center gap-2"
+      className="px-8 py-3 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 disabled:opacity-50 text-black font-semibold rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center gap-2"
     >
       {isConnecting ? (
         <>
-          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+          <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
           Connecting...
         </>
       ) : (
