@@ -29,6 +29,14 @@ export default function OrganizePage() {
 
   // Add judge form state
   const [judgeAddresses, setJudgeAddresses] = useState("");
+  
+  // Add project form state
+  const [projectForm, setProjectForm] = useState({
+    name: "",
+    description: "",
+    githubUrl: "",
+    demoUrl: ""
+  });
 
   useEffect(() => {
     if (account) {
@@ -263,6 +271,74 @@ export default function OrganizePage() {
       showToast({
         type: "error",
         title: "Judge Registration Error",
+        message: errorMessage,
+        duration: 6000
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const addProject = async () => {
+    if (!selectedHackathon || !projectForm.name.trim() || !projectForm.description.trim()) return;
+
+    try {
+      setLoading(true);
+      console.log("Registering project:", { hackathonId: selectedHackathon.id, projectForm });
+      
+      const success = await contractService.registerProject(
+        selectedHackathon.id,
+        projectForm.name.trim(),
+        projectForm.description.trim(),
+        projectForm.githubUrl.trim(),
+        projectForm.demoUrl.trim()
+      );
+      
+      if (success) {
+        showToast({
+          type: "success",
+          title: "Project Added Successfully! 🚀",
+          message: `Project "${projectForm.name}" has been registered for ${selectedHackathon.name}.`,
+          duration: 6000
+        });
+        
+        // Reset form
+        setProjectForm({
+          name: "",
+          description: "",
+          githubUrl: "",
+          demoUrl: ""
+        });
+        
+        // Reload data
+        await loadHackathonDetails(selectedHackathon.id);
+        await loadOrganizerData(); // Also refresh the main list
+      } else {
+        showToast({
+          type: "error",
+          title: "Failed to Add Project",
+          message: "Unable to register the project. Please try again.",
+          duration: 6000
+        });
+      }
+    } catch (error: any) {
+      console.error("Failed to add project:", error);
+      
+      let errorMessage = "An error occurred while registering the project. Please try again.";
+      
+      if (error.message?.includes("No signer available")) {
+        errorMessage = "Wallet not connected. Please connect your wallet first.";
+      } else if (error.code === 'UNPREDICTABLE_GAS_LIMIT') {
+        errorMessage = "Contract interaction failed. The contract may not be deployed or the function may fail.";
+      } else if (error.code === 'INSUFFICIENT_FUNDS') {
+        errorMessage = "Insufficient funds for transaction.";
+      } else if (error.code === 'USER_REJECTED') {
+        errorMessage = "Transaction was rejected by user.";
+      }
+      
+      showToast({
+        type: "error",
+        title: "Project Registration Error",
         message: errorMessage,
         duration: 6000
       });
@@ -661,7 +737,73 @@ export default function OrganizePage() {
                   <div className="space-y-6">
                     <div className="bg-white/5 border border-white/10 rounded-xl p-6">
                       <h4 className="text-xl font-semibold text-white mb-2">{selectedHackathon.name}</h4>
-                      <p className="text-gray-300 text-sm">{selectedHackathon.description}</p>
+                      <p className="text-gray-300 text-sm mb-4">{selectedHackathon.description}</p>
+                      
+                      {/* Add Project Form */}
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">
+                              Project Name *
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="Enter project name"
+                              value={projectForm.name}
+                              onChange={(e) => setProjectForm({...projectForm, name: e.target.value})}
+                              className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">
+                              GitHub URL
+                            </label>
+                            <input
+                              type="url"
+                              placeholder="https://github.com/username/repo"
+                              value={projectForm.githubUrl}
+                              onChange={(e) => setProjectForm({...projectForm, githubUrl: e.target.value})}
+                              className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                            />
+                          </div>
+                        </div>
+                        
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Project Description *
+                          </label>
+                          <textarea
+                            placeholder="Describe your project, its features, and technologies used..."
+                            value={projectForm.description}
+                            onChange={(e) => setProjectForm({...projectForm, description: e.target.value})}
+                            rows={3}
+                            className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 resize-vertical"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Demo URL
+                          </label>
+                          <input
+                            type="url"
+                            placeholder="https://your-demo-site.com"
+                            value={projectForm.demoUrl}
+                            onChange={(e) => setProjectForm({...projectForm, demoUrl: e.target.value})}
+                            className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                          />
+                        </div>
+                        
+                        <div className="flex justify-end">
+                          <button
+                            onClick={addProject}
+                            disabled={loading || !projectForm.name.trim() || !projectForm.description.trim()}
+                            className="px-6 py-2 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 disabled:opacity-50 text-black font-medium rounded-lg transition-all duration-300"
+                          >
+                            {loading ? "Adding..." : "Add Project"}
+                          </button>
+                        </div>
+                      </div>
                     </div>
 
                     {projects.length === 0 ? (

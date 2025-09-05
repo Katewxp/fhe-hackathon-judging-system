@@ -271,18 +271,46 @@ class ContractService {
     hackathonId: number,
     name: string,
     description: string,
-    githubUrl: string,
-    demoUrl: string
+    githubUrl: string = "",
+    demoUrl: string = ""
   ): Promise<boolean> {
     try {
-      if (!this.signer) throw new Error("No signer available");
+      console.log("ContractService: Registering project:", { hackathonId, name, description, githubUrl, demoUrl });
+      
+      if (!this.signer) {
+        console.error("ContractService: No signer available for project registration");
+        throw new Error("No signer available");
+      }
 
-      const tx = await this.contract.registerProject(hackathonId, name, description, githubUrl, demoUrl);
-      await tx.wait();
+      // Combine description with URLs if provided
+      let fullDescription = description;
+      if (githubUrl || demoUrl) {
+        fullDescription += "\n\n";
+        if (githubUrl) fullDescription += `GitHub: ${githubUrl}\n`;
+        if (demoUrl) fullDescription += `Demo: ${demoUrl}\n`;
+      }
+
+      console.log("ContractService: Calling contract.registerProject...");
+      const tx = await this.contract.registerProject(hackathonId, name, fullDescription);
+      console.log("ContractService: Transaction sent:", tx.hash);
+      
+      const receipt = await tx.wait();
+      console.log("ContractService: Transaction confirmed:", receipt);
+      
       return true;
-    } catch (error) {
-      console.error("Failed to register project:", error);
-      return false;
+    } catch (error: any) {
+      console.error("ContractService: Failed to register project:", error);
+      
+      // Provide more specific error messages
+      if (error.code === 'UNPREDICTABLE_GAS_LIMIT') {
+        console.error("ContractService: Gas estimation failed - contract may not exist or function may fail");
+      } else if (error.code === 'INSUFFICIENT_FUNDS') {
+        console.error("ContractService: Insufficient funds for transaction");
+      } else if (error.code === 'USER_REJECTED') {
+        console.error("ContractService: User rejected the transaction");
+      }
+      
+      throw error; // Re-throw to let the calling code handle it
     }
   }
 
