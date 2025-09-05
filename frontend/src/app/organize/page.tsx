@@ -28,7 +28,7 @@ export default function OrganizePage() {
   });
 
   // Add judge form state
-  const [judgeAddress, setJudgeAddress] = useState("");
+  const [judgeAddresses, setJudgeAddresses] = useState("");
 
   useEffect(() => {
     if (account) {
@@ -159,59 +159,101 @@ export default function OrganizePage() {
     }
   };
 
-  const addJudge = async () => {
-    if (!judgeAddress || !selectedHackathon) return;
+  const addJudges = async () => {
+    if (!judgeAddresses || !selectedHackathon) return;
 
-    // Validate address format
-    const trimmedAddress = judgeAddress.trim();
-    if (!trimmedAddress.startsWith('0x') || trimmedAddress.length !== 42) {
+    // Parse addresses from textarea (one per line)
+    const addressLines = judgeAddresses.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+    
+    if (addressLines.length === 0) {
       showToast({
         type: "error",
-        title: "Invalid Address",
-        message: "Please enter a valid Ethereum address (0x followed by 40 characters).",
+        title: "No Addresses",
+        message: "Please enter at least one judge address.",
         duration: 5000
+      });
+      return;
+    }
+
+    // Validate all addresses
+    const invalidAddresses = addressLines.filter(address => 
+      !address.startsWith('0x') || address.length !== 42
+    );
+
+    if (invalidAddresses.length > 0) {
+      showToast({
+        type: "error",
+        title: "Invalid Addresses",
+        message: `Invalid address format: ${invalidAddresses[0]}. Please ensure all addresses start with 0x and are 42 characters long.`,
+        duration: 6000
       });
       return;
     }
 
     try {
       setLoading(true);
-      console.log("Registering judge:", { hackathonId: selectedHackathon.id, judgeAddress: trimmedAddress });
+      console.log("Registering judges:", { hackathonId: selectedHackathon.id, addresses: addressLines });
       
-      const success = await contractService.registerJudge(selectedHackathon.id, trimmedAddress);
+      let successCount = 0;
+      let failedAddresses = [];
+
+      // Register each judge sequentially
+      for (const address of addressLines) {
+        try {
+          const success = await contractService.registerJudge(selectedHackathon.id, address);
+          if (success) {
+            successCount++;
+            console.log(`Successfully registered judge: ${address}`);
+          } else {
+            failedAddresses.push(address);
+            console.error(`Failed to register judge: ${address}`);
+          }
+        } catch (error) {
+          failedAddresses.push(address);
+          console.error(`Error registering judge ${address}:`, error);
+        }
+      }
       
-      if (success) {
+      // Show results
+      if (successCount === addressLines.length) {
         showToast({
           type: "success",
-          title: "Judge Added Successfully! 👨‍⚖️",
-          message: `Judge ${trimmedAddress.slice(0, 6)}...${trimmedAddress.slice(-4)} has been registered for ${selectedHackathon.name}.`,
+          title: "All Judges Added Successfully! 👨‍⚖️",
+          message: `Successfully registered ${successCount} judge(s) for ${selectedHackathon.name}.`,
           duration: 6000
         });
-        
-        setJudgeAddress("");
-        
-        // Reload data
-        await loadHackathonDetails(selectedHackathon.id);
-        await loadOrganizerData(); // Also refresh the main list
+      } else if (successCount > 0) {
+        showToast({
+          type: "warning",
+          title: "Partial Success",
+          message: `Registered ${successCount} of ${addressLines.length} judges. ${failedAddresses.length} failed.`,
+          duration: 6000
+        });
       } else {
         showToast({
           type: "error",
-          title: "Failed to Add Judge",
-          message: "Unable to register the judge. Please check the address and try again.",
+          title: "Failed to Add Judges",
+          message: "Unable to register any judges. Please check the addresses and try again.",
           duration: 6000
         });
       }
-    } catch (error: any) {
-      console.error("Failed to add judge:", error);
       
-      let errorMessage = "An error occurred while registering the judge. Please try again.";
+      setJudgeAddresses("");
+      
+      // Reload data
+      await loadHackathonDetails(selectedHackathon.id);
+      await loadOrganizerData(); // Also refresh the main list
+    } catch (error: any) {
+      console.error("Failed to add judges:", error);
+      
+      let errorMessage = "An error occurred while registering the judges. Please try again.";
       
       if (error.message?.includes("ENS name")) {
-        errorMessage = "Invalid address format. Please enter a valid Ethereum address.";
+        errorMessage = "Invalid address format. Please enter valid Ethereum addresses.";
       } else if (error.message?.includes("No signer available")) {
         errorMessage = "Wallet not connected. Please connect your wallet first.";
       } else if (error.code === 'UNPREDICTABLE_GAS_LIMIT') {
-        errorMessage = "Contract interaction failed. The judge may already be registered or the contract may not be deployed.";
+        errorMessage = "Contract interaction failed. The contract may not be deployed or some judges may already be registered.";
       } else if (error.code === 'INSUFFICIENT_FUNDS') {
         errorMessage = "Insufficient funds for transaction.";
       } else if (error.code === 'USER_REJECTED') {
@@ -683,34 +725,51 @@ export default function OrganizePage() {
                       <h4 className="text-xl font-semibold text-white mb-2">{selectedHackathon.name}</h4>
                       <p className="text-gray-300 text-sm mb-4">{selectedHackathon.description}</p>
                       
-                      {/* Add Judge Form */}
-                      <div className="flex gap-4">
-                        <input
-                          type="text"
-                          placeholder="Judge wallet address (0x...)"
-                          value={judgeAddress}
-                          onChange={(e) => setJudgeAddress(e.target.value.trim())}
-                          onKeyPress={(e) => {
-                            if (e.key === 'Enter' && !loading && judgeAddress.trim()) {
-                              addJudge();
-                            }
-                          }}
-                          className="flex-1 px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                        />
-                        <button
-                          onClick={addJudge}
-                          disabled={loading || !judgeAddress.trim()}
-                          className="px-6 py-2 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 disabled:opacity-50 text-black font-medium rounded-lg transition-all duration-300"
-                        >
-                          {loading ? "Adding..." : "Add Judge"}
-                        </button>
+                      {/* Add Judges Form */}
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Judge Addresses (one per line)
+                          </label>
+                          <textarea
+                            placeholder="0x1234567890123456789012345678901234567890&#10;0xabcdefabcdefabcdefabcdefabcdefabcdefabcd&#10;0x9876543210987654321098765432109876543210"
+                            value={judgeAddresses}
+                            onChange={(e) => setJudgeAddresses(e.target.value)}
+                            rows={4}
+                            className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 resize-vertical"
+                          />
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <div className="text-sm text-gray-400">
+                            {judgeAddresses.split('\n').filter(line => line.trim().length > 0).length} address(es) entered
+                          </div>
+                          <button
+                            onClick={addJudges}
+                            disabled={loading || !judgeAddresses.trim()}
+                            className="px-6 py-2 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 disabled:opacity-50 text-black font-medium rounded-lg transition-all duration-300"
+                          >
+                            {loading ? "Adding..." : "Add Judges"}
+                          </button>
+                        </div>
+                        {judgeAddresses && (
+                          <div className="text-sm">
+                            {judgeAddresses.split('\n').map((line, index) => {
+                              const address = line.trim();
+                              if (!address) return null;
+                              
+                              const isValid = address.startsWith('0x') && address.length === 42;
+                              return (
+                                <div key={index} className={`flex items-center gap-2 ${isValid ? 'text-green-400' : 'text-red-400'}`}>
+                                  <span>{isValid ? '✅' : '❌'}</span>
+                                  <span className="font-mono text-xs">
+                                    {address.slice(0, 6)}...{address.slice(-4)}
+                                  </span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
                       </div>
-                      {judgeAddress && !judgeAddress.startsWith('0x') && (
-                        <p className="text-red-400 text-sm mt-2">⚠️ Address must start with 0x</p>
-                      )}
-                      {judgeAddress && judgeAddress.startsWith('0x') && judgeAddress.length !== 42 && (
-                        <p className="text-red-400 text-sm mt-2">⚠️ Address must be 42 characters long</p>
-                      )}
                     </div>
 
                     {judges.length === 0 ? (
