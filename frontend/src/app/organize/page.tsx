@@ -439,10 +439,13 @@ export default function OrganizePage() {
                               ? "bg-green-500/20 text-green-400" 
                               : hackathon.scoresAggregated 
                               ? "bg-yellow-500/20 text-yellow-400"
-                              : "bg-blue-500/20 text-blue-400"
+                              : hackathon.isActive
+                              ? "bg-yellow-500/20 text-yellow-400"
+                              : "bg-gray-500/20 text-gray-400"
                           }`}>
                             {hackathon.rankingsPublished ? "Completed" : 
-                             hackathon.scoresAggregated ? "Judging" : "Active"}
+                             hackathon.scoresAggregated ? "Judging" : 
+                             hackathon.isActive ? "Active" : "Ended"}
                           </span>
                         </div>
                         
