@@ -296,7 +296,13 @@ class ContractService {
       const startTime = Math.floor(startDate.getTime() / 1000);
       const endTime = Math.floor(endDate.getTime() / 1000);
 
-      const tx = await this.contract.createHackathon(name, description, startTime, endTime);
+      // Get current nonce to avoid nonce conflicts
+      const currentNonce = await this.signer.getNonce();
+      console.log("ContractService: Current nonce for createHackathon:", currentNonce);
+      
+      const tx = await this.contract.createHackathon(name, description, startTime, endTime, {
+        nonce: currentNonce
+      });
       await tx.wait();
       return true;
     } catch (error) {
@@ -322,7 +328,14 @@ class ContractService {
       }
 
       console.log("ContractService: Calling contract.registerProject...");
-      const tx = await this.contract.registerProject(hackathonId, name, description, githubUrl, demoUrl);
+      
+      // Get current nonce to avoid nonce conflicts
+      const currentNonce = await this.signer.getNonce();
+      console.log("ContractService: Current nonce for registerProject:", currentNonce);
+      
+      const tx = await this.contract.registerProject(hackathonId, name, description, githubUrl, demoUrl, {
+        nonce: currentNonce
+      });
       console.log("ContractService: Transaction sent:", tx.hash);
       
       const receipt = await tx.wait();
@@ -363,7 +376,14 @@ class ContractService {
       }
 
       console.log("ContractService: Calling contract.registerJudge...");
-      const tx = await this.contract.registerJudge(hackathonId, judgeAddress);
+      
+      // Get current nonce to avoid nonce conflicts
+      const currentNonce = await this.signer.getNonce();
+      console.log("ContractService: Current nonce:", currentNonce);
+      
+      const tx = await this.contract.registerJudge(hackathonId, judgeAddress, {
+        nonce: currentNonce
+      });
       console.log("ContractService: Transaction sent:", tx.hash);
       
       const receipt = await tx.wait();
@@ -382,6 +402,8 @@ class ContractService {
         console.error("ContractService: Insufficient funds for transaction");
       } else if (error.code === 'USER_REJECTED') {
         console.error("ContractService: User rejected the transaction");
+      } else if (error.code === 'NONCE_EXPIRED') {
+        console.error("ContractService: Nonce expired - please try again");
       }
       
       throw error; // Re-throw to let the calling code handle it
@@ -409,9 +431,15 @@ class ContractService {
 
       console.log("Calling contract.submitScore with:", { hackathonId, projectId, encryptedScore: encryptedScore.length, proof: proof.length });
       
+      // Get current nonce to avoid nonce conflicts
+      const currentNonce = await this.signer.getNonce();
+      console.log("ContractService: Current nonce for submitScore:", currentNonce);
+      
       // Note: The contract expects externalEuint8 (bytes32) and bytes proof
       // This is a mock implementation - in production, use proper FHE encryption
-      const tx = await this.contract.submitScore(hackathonId, projectId, encryptedScore, proof);
+      const tx = await this.contract.submitScore(hackathonId, projectId, encryptedScore, proof, {
+        nonce: currentNonce
+      });
       console.log("Transaction sent:", tx.hash);
       
       const receipt = await tx.wait();
