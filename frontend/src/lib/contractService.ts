@@ -39,6 +39,22 @@ class ContractService {
   private contract: any;
   private signer: ethers.Signer | null = null;
 
+  // Helper function to get the correct nonce with retry logic
+  private async getCorrectNonce(maxRetries: number = 3): Promise<number> {
+    for (let i = 0; i < maxRetries; i++) {
+      try {
+        const pendingNonce = await this.signer!.getNonce("pending");
+        console.log(`ContractService: Attempt ${i + 1} - Pending nonce:`, pendingNonce);
+        return pendingNonce;
+      } catch (error) {
+        console.warn(`ContractService: Nonce fetch attempt ${i + 1} failed:`, error);
+        if (i === maxRetries - 1) throw error;
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
+      }
+    }
+    throw new Error("Failed to get nonce after retries");
+  }
+
   constructor() {
     // Initialize with a default provider for read operations
     const provider = new ethers.JsonRpcProvider("https://1rpc.io/sepolia");
@@ -296,12 +312,12 @@ class ContractService {
       const startTime = Math.floor(startDate.getTime() / 1000);
       const endTime = Math.floor(endDate.getTime() / 1000);
 
-      // Get current nonce to avoid nonce conflicts
-      const currentNonce = await this.signer.getNonce();
-      console.log("ContractService: Current nonce for createHackathon:", currentNonce);
+      // Get correct nonce with retry logic
+      const correctNonce = await this.getCorrectNonce();
+      console.log("ContractService: Using nonce for createHackathon:", correctNonce);
       
       const tx = await this.contract.createHackathon(name, description, startTime, endTime, {
-        nonce: currentNonce
+        nonce: correctNonce
       });
       await tx.wait();
       return true;
@@ -329,12 +345,12 @@ class ContractService {
 
       console.log("ContractService: Calling contract.registerProject...");
       
-      // Get current nonce to avoid nonce conflicts
-      const currentNonce = await this.signer.getNonce();
-      console.log("ContractService: Current nonce for registerProject:", currentNonce);
+      // Get correct nonce with retry logic
+      const correctNonce = await this.getCorrectNonce();
+      console.log("ContractService: Using nonce for registerProject:", correctNonce);
       
       const tx = await this.contract.registerProject(hackathonId, name, description, githubUrl, demoUrl, {
-        nonce: currentNonce
+        nonce: correctNonce
       });
       console.log("ContractService: Transaction sent:", tx.hash);
       
@@ -377,12 +393,12 @@ class ContractService {
 
       console.log("ContractService: Calling contract.registerJudge...");
       
-      // Get current nonce to avoid nonce conflicts
-      const currentNonce = await this.signer.getNonce();
-      console.log("ContractService: Current nonce:", currentNonce);
+      // Get correct nonce with retry logic
+      const correctNonce = await this.getCorrectNonce();
+      console.log("ContractService: Using nonce:", correctNonce);
       
       const tx = await this.contract.registerJudge(hackathonId, judgeAddress, {
-        nonce: currentNonce
+        nonce: correctNonce
       });
       console.log("ContractService: Transaction sent:", tx.hash);
       
@@ -431,14 +447,14 @@ class ContractService {
 
       console.log("Calling contract.submitScore with:", { hackathonId, projectId, encryptedScore: encryptedScore.length, proof: proof.length });
       
-      // Get current nonce to avoid nonce conflicts
-      const currentNonce = await this.signer.getNonce();
-      console.log("ContractService: Current nonce for submitScore:", currentNonce);
+      // Get correct nonce with retry logic
+      const correctNonce = await this.getCorrectNonce();
+      console.log("ContractService: Using nonce for submitScore:", correctNonce);
       
       // Note: The contract expects externalEuint8 (bytes32) and bytes proof
       // This is a mock implementation - in production, use proper FHE encryption
       const tx = await this.contract.submitScore(hackathonId, projectId, encryptedScore, proof, {
-        nonce: currentNonce
+        nonce: correctNonce
       });
       console.log("Transaction sent:", tx.hash);
       
