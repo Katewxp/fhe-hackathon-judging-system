@@ -40,41 +40,79 @@ export const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
 
     setIsConnecting(true);
     try {
+      // Clear any existing state first
+      setAccount('');
+      setProvider(null);
+      setSigner(null);
+
+      // Add a small delay to ensure ethereum is ready
+      await new Promise(resolve => setTimeout(resolve, 100));
+
       // Request account access
       const accounts = await window.ethereum.request({
         method: 'eth_requestAccounts',
       });
 
-      if (accounts.length > 0) {
+      if (accounts && accounts.length > 0) {
         const account = accounts[0];
         setAccount(account);
 
-        // Create provider and signer
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const signer = await provider.getSigner();
+        try {
+          // Create provider and signer with retry logic
+          const provider = new ethers.BrowserProvider(window.ethereum);
+          const signer = await provider.getSigner();
 
-        setProvider(provider);
-        setSigner(signer);
+          setProvider(provider);
+          setSigner(signer);
 
-        // Listen for account changes
-        window.ethereum.on('accountsChanged', (accounts: string[]) => {
-          if (accounts.length > 0) {
-            setAccount(accounts[0]);
-          } else {
-            setAccount('');
-            setProvider(null);
-            setSigner(null);
+          // Set up event listeners only once
+          if (!window.ethereum._listenersAdded) {
+            window.ethereum.on('accountsChanged', (accounts: string[]) => {
+              if (accounts && accounts.length > 0) {
+                setAccount(accounts[0]);
+                // Refresh provider and signer
+                const newProvider = new ethers.BrowserProvider(window.ethereum);
+                newProvider.getSigner().then(newSigner => {
+                  setProvider(newProvider);
+                  setSigner(newSigner);
+                }).catch(err => console.warn('Failed to refresh signer:', err));
+              } else {
+                setAccount('');
+                setProvider(null);
+                setSigner(null);
+              }
+            });
+
+            window.ethereum.on('chainChanged', () => {
+              // Instead of reloading, just refresh the connection
+              setTimeout(() => {
+                window.location.reload();
+              }, 1000);
+            });
+
+            window.ethereum._listenersAdded = true;
           }
-        });
-
-        // Listen for chain changes
-        window.ethereum.on('chainChanged', () => {
-          window.location.reload();
-        });
+        } catch (providerError) {
+          console.warn('Provider initialization failed:', providerError);
+          // Still set the account even if provider fails
+        }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error connecting wallet:', error);
-      alert('Failed to connect wallet');
+      
+      // Handle specific error cases
+      if (error.code === 4001) {
+        alert('Connection rejected by user');
+      } else if (error.code === -32002) {
+        alert('Connection request already pending');
+      } else {
+        alert('Failed to connect wallet. Please try again.');
+      }
+      
+      // Clear any partial state
+      setAccount('');
+      setProvider(null);
+      setSigner(null);
     } finally {
       setIsConnecting(false);
     }
@@ -91,23 +129,40 @@ export const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
     const checkConnection = async () => {
       if (typeof window !== 'undefined' && window.ethereum) {
         try {
+          // Add a small delay to ensure ethereum is fully loaded
+          await new Promise(resolve => setTimeout(resolve, 100));
+          
           const accounts = await window.ethereum.request({
             method: 'eth_accounts',
           });
-          if (accounts.length > 0) {
-            setAccount(accounts[0]);
-            const provider = new ethers.BrowserProvider(window.ethereum);
-            const signer = await provider.getSigner();
-            setProvider(provider);
-            setSigner(signer);
+          
+          if (accounts && accounts.length > 0) {
+            const account = accounts[0];
+            setAccount(account);
+            
+            try {
+              const provider = new ethers.BrowserProvider(window.ethereum);
+              const signer = await provider.getSigner();
+              setProvider(provider);
+              setSigner(signer);
+            } catch (providerError) {
+              console.warn('Provider initialization failed:', providerError);
+              // Still set the account even if provider fails
+            }
           }
         } catch (error) {
           console.error('Error checking wallet connection:', error);
+          // Clear any stale state
+          setAccount('');
+          setProvider(null);
+          setSigner(null);
         }
       }
     };
 
-    checkConnection();
+    // Add a delay to ensure the page is fully loaded
+    const timer = setTimeout(checkConnection, 500);
+    return () => clearTimeout(timer);
   }, []);
 
   const value: WalletContextType = {

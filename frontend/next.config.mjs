@@ -3,6 +3,20 @@ const nextConfig = {
   experimental: {
     // appDir is now default in Next.js 13+
   },
+  // Add cache control headers
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=0, must-revalidate',
+          },
+        ],
+      },
+    ];
+  },
   webpack: (config) => {
     config.resolve.fallback = {
       ...config.resolve.fallback,
