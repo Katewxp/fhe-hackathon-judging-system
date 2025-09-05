@@ -55,6 +55,35 @@ class ContractService {
     return new Date(days * 24 * 60 * 60 * 1000);
   }
 
+  // Sort hackathons by priority: Active > Judging > Upcoming > Ended > Completed
+  static sortHackathons(hackathons: Hackathon[]): Hackathon[] {
+    return hackathons.sort((a, b) => {
+      const getPriority = (hackathon: Hackathon) => {
+        if (hackathon.isActive) return 1;
+        if (hackathon.scoresAggregated && !hackathon.rankingsPublished) return 2;
+        if (hackathon.rankingsPublished) return 5;
+        
+        // For ended hackathons, sort by end date (most recent first)
+        const currentTime = Date.now();
+        const endTimeMs = hackathon.endDay * 24 * 60 * 60 * 1000;
+        if (currentTime > endTimeMs) return 4;
+        
+        // For upcoming hackathons, sort by start date (soonest first)
+        return 3;
+      };
+
+      const priorityA = getPriority(a);
+      const priorityB = getPriority(b);
+
+      if (priorityA !== priorityB) {
+        return priorityA - priorityB;
+      }
+
+      // If same priority, sort by start date (most recent first)
+      return b.startDay - a.startDay;
+    });
+  }
+
   // Convert Date to days since epoch
   private dateToDays(date: Date): number {
     return Math.floor(date.getTime() / (24 * 60 * 60 * 1000));

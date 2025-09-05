@@ -57,6 +57,9 @@ export default function HackathonsPage() {
 
     return matchesFilter && matchesSearch;
   });
+  
+  // Sort hackathons by priority
+  const sortedHackathons = contractService.sortHackathons(filteredHackathons);
 
   if (loading) {
     return (
@@ -134,7 +137,7 @@ export default function HackathonsPage() {
       {/* Hackathons Grid */}
       <div className="px-4 sm:px-6 lg:px-8 pb-20">
         <div className="max-w-7xl mx-auto">
-          {filteredHackathons.length === 0 ? (
+          {sortedHackathons.length === 0 ? (
             <div className="text-center py-20">
               <div className="text-6xl mb-4">🔍</div>
               <h3 className="text-2xl font-bold text-white mb-4">No Hackathons Found</h3>
@@ -154,7 +157,7 @@ export default function HackathonsPage() {
           ) : (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {filteredHackathons.map((hackathon) => (
+                {sortedHackathons.map((hackathon) => (
                   <div
                     key={hackathon.id}
                     className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-6 hover:bg-white/20 transition-all duration-300 transform hover:scale-105"
