@@ -427,6 +427,7 @@ class ContractService {
   }
 
   // Submit encrypted score (mock for now - replace with real FHE)
+  // Note: This is a temporary mock implementation for testing
   async submitScore(
     hackathonId: number,
     projectId: number,
@@ -440,12 +441,14 @@ class ContractService {
         throw new Error("No signer available");
       }
 
-      // Mock encrypted score and proof - replace with real FHE encryption
+      // TEMPORARY: Mock encrypted score and proof - replace with real FHE encryption
       // For FHE contracts, externalEuint8 is represented as bytes32 in the ABI
+      // WARNING: This is a mock implementation that may not work with real FHE contracts
       const encryptedScore = ethers.zeroPadValue(ethers.toUtf8Bytes(`encrypted_${score}_${Date.now()}`), 32);
       const proof = ethers.toUtf8Bytes(`proof_${score}_${Date.now()}`);
 
       console.log("Calling contract.submitScore with:", { hackathonId, projectId, encryptedScore: encryptedScore.length, proof: proof.length });
+      console.log("WARNING: Using mock FHE data - this may fail with real FHE contracts");
       
       // Get correct nonce with retry logic
       const correctNonce = await this.getCorrectNonce();
@@ -472,6 +475,10 @@ class ContractService {
         console.error("Insufficient funds for transaction");
       } else if (error.code === 'USER_REJECTED') {
         console.error("User rejected the transaction");
+      } else if (error.message?.includes('execution reverted')) {
+        console.error("Contract execution reverted - this may be due to FHE validation failure");
+        console.error("The contract expects real FHE encrypted data, but we're using mock data");
+        console.error("Error data:", error.data);
       }
       
       throw error; // Re-throw to let the calling code handle it
